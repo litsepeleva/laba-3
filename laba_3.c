@@ -1,25 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        printf("Использование: %s <имя файла>\n", argv[0]);
-        return 1;
-    }
-    FILE *fp = fopen(argv[1], "r");
-    if (fp == NULL) {
-        printf("Ошибка\n");
-        return 1;
-    }
-    int n, m;
-    fscanf(fp, "%d %d", &n, &m); 
-    int matrix[100][100]; 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            fscanf(fp, "%d", &matrix[i][j]);
-        }
-    }
-    fclose(fp);
 void stroki(int** matrix, int n, int m) {
     for (int j = 0; j < m; j++) {
         int temp = matrix[0][j];
@@ -27,7 +8,6 @@ void stroki(int** matrix, int n, int m) {
         matrix[n-1][j] = temp;
     }
 }
-    stroki(matrix, n, m);
 void calculate(int** matrix, int n, int m, double* s) {
     for (int i = 0; i < n; i++) {
         double sum = 0;
@@ -38,6 +18,33 @@ void calculate(int** matrix, int n, int m, double* s) {
         s[i] = 5 + sum;
     }
 }
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Использование: %s <имя файла>\n", argv[0]);
+        return 1;
+    }
+    FILE *file = fopen(argv[1], "r");
+    if (file == NULL) {
+        printf("Ошибка\n");
+        return 1;
+    }
+    int n, m;
+    fscanf(file, "%d %d", &n, &m); 
+    int** matrix = malloc(n * sizeof(int*));
+    for (int i = 0; i < n; i++) {
+        matrix[i] = malloc(m * sizeof(int));
+    }
+   
+     for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (fscanf(file, "%d", &matrix[i][j]) != 1) {
+                printf("Ошибка.\n");
+               
+            }
+        }
+    }
+    fclose(file);
+    stroki(matrix, n, m);
     double* s = malloc(n * sizeof(double));
     if (!s) {
         printf("Ошибка\n");
