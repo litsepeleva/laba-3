@@ -1,17 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 void stroki(int** matrix, int n, int m) {
-    for (int j = 0; j < m; j++) {
+    for (int j=0; j<m; j++) {
         int temp = matrix[0][j];
         matrix[0][j] = matrix[n-1][j];
         matrix[n-1][j] = temp;
     }
 }
 void calculate(int** matrix, int n, int m, double* s) {
-    for (int i = 0; i < n; i++) {
+    for (int i=0; i<n; i++) {
         double sum = 0;
-        for (int j = 0; j < m; j++) {
+        for (int j=0; j<m; j++) {
             double val = (double)matrix[i][j];
             sum += 1 - val / 6.0 + (val * val) / 6.0;
         }
@@ -28,18 +27,36 @@ int main(int argc, char *argv[]) {
         printf("Ошибка\n");
         return 1;
     }
-    int n, m;
-    fscanf(file, "%d %d", &n, &m); 
-    int** matrix = malloc(n * sizeof(int*));
-    for (int i = 0; i < n; i++) {
-        matrix[i] = malloc(m * sizeof(int));
+     int n, m;
+    if (fscanf(file, "%d %d", &n, &m) != 2) {
+        printf("Ошибка\n");
+        fclose(file);
+        return 1;
     }
-   
-     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
+    int** matrix = malloc(n * sizeof(int*));
+    if (!matrix) {
+        printf("Ошибка\n");
+        fclose(file);
+        return 1;
+    }
+    for (int i=0; i<n; i++) {
+        matrix[i] = malloc(m * sizeof(int));
+        if (!matrix[i]) {
+            printf("Ошибка\n");
+            for (int k=0; k<i; k++) free(matrix[k]);
+            free(matrix);
+            fclose(file);
+            return 1;
+        }
+    }
+    for (int i=0; i<n; i++) {
+        for (int j=0; j<m; j++) {
             if (fscanf(file, "%d", &matrix[i][j]) != 1) {
-                printf("Ошибка.\n");
-               
+                printf("Ошибка\n");
+                for (int k=0; k<n; k++) free(matrix[k]);
+                free(matrix);
+                fclose(file);
+                return 1;
             }
         }
     }
@@ -48,23 +65,23 @@ int main(int argc, char *argv[]) {
     double* s = malloc(n * sizeof(double));
     if (!s) {
         printf("Ошибка\n");
-        for (int k = 0; k < n; k++) free(matrix[k]);
+        for (int k=0; k<n; k++) free(matrix[k]);
         free(matrix);
         return 1;
     }
     calculate(matrix, n, m, s);
     printf("Обновленная матрица:\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
+    for (int i=0; i<n; i++) {
+        for (int j=0; j<m; j++) {
             printf("%d ", matrix[i][j]);
         }
         printf("\n");
     }
     printf("Суммa для каждой строки:\n");
-    for (int i = 0; i < n; i++) {
+    for (int i=0; i<n; i++) {
         printf("s[%d] = %.3lf\n", i, s[i]);
     }
-    for (int i = 0; i < n; i++) free(matrix[i]);
+    for (int i=0; i<n; i++) free(matrix[i]);
     free(matrix);
     free(s);
     return 0;
